@@ -3,7 +3,7 @@ name = "go1_leads"
 authors = [
     { name = "Tridots Tech", email = "info@tridotstech.com"}
 ]
-description = "Pull leads from various sources into ERPNext"
+description = "Pull leads from various source into ERPNext"
 requires-python = ">=3.10"
 readme = "README.md"
 dynamic = ["version"]

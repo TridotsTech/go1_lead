@@ -1,7 +1,7 @@
 app_name = "go1_leads"
 app_title = "Go1 Leads"
 app_publisher = "Tridots Tech"
-app_description = "Pull leads from various sources into ERPNext"
+app_description = "Pull leads from various source into ERPNext"
 app_email = "info@tridotstech.com"
 app_license = "mit"
 # required_apps = []

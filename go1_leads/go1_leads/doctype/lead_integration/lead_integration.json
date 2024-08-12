@@ -1,0 +1,80 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "format:{lead_application}-{#####}",
+ "creation": "2024-08-12 17:22:55.653044",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "lead_application",
+  "url",
+  "user_id",
+  "profile_id",
+  "key",
+  "from_date",
+  "to_date"
+ ],
+ "fields": [
+  {
+   "fieldname": "lead_application",
+   "fieldtype": "Select",
+   "label": "Lead Application",
+   "options": "Trade India\nIndia Mart"
+  },
+  {
+   "fieldname": "user_id",
+   "fieldtype": "Data",
+   "label": "User ID"
+  },
+  {
+   "fieldname": "profile_id",
+   "fieldtype": "Data",
+   "label": "Profile ID"
+  },
+  {
+   "fieldname": "key",
+   "fieldtype": "Data",
+   "label": "Key"
+  },
+  {
+   "fieldname": "from_date",
+   "fieldtype": "Date",
+   "label": "From Date"
+  },
+  {
+   "fieldname": "to_date",
+   "fieldtype": "Date",
+   "label": "To Date"
+  },
+  {
+   "fieldname": "url",
+   "fieldtype": "Data",
+   "label": "URL"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2024-08-12 17:38:35.831509",
+ "modified_by": "Administrator",
+ "module": "Go1 Leads",
+ "name": "Lead Integration",
+ "naming_rule": "Expression",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
