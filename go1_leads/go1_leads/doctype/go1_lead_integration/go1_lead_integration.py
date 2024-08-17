@@ -60,8 +60,8 @@ class Go1LeadIntegration(Document):
 							"custom_product_quantity":d['quantity'] if d.get('quantity') else "",
 							"custom_subject":d['subject'],
 							"custom_message":d['message'],
-							# "custom_product_enquired":"Rocotile",
-							# "custom_customer_category":"B2C",
+							"custom_product_enquired":"Rocotile",
+							"custom_customer_category":"B2C",
 							"mobile_no":d['sender_mobile'],
 							"whatsapp_no":d['sender_mobile'],
 						}).insert(ignore_permissions=True)
@@ -91,8 +91,8 @@ class Go1LeadIntegration(Document):
 							"custom_message":d['QUERY_MESSAGE'],
 							"custom_address":d['SENDER_ADDRESS'],
 							"custom_pincode":d['SENDER_PINCODE'] if d.get('SENDER_PINCODE') else "",
-							# "custom_product_enquired":"Rocotile",
-							# "custom_customer_category":"B2C",
+							"custom_product_enquired":"Rocotile",
+							"custom_customer_category":"B2C",
 							"mobile_no":d['SENDER_MOBILE'],
 							"whatsapp_no":d['SENDER_MOBILE'],
 						}).insert(ignore_permissions=True)
