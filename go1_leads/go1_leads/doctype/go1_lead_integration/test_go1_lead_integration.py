@@ -5,5 +5,5 @@
 from frappe.tests.utils import FrappeTestCase
 
 
-class TestLeadIntegration(FrappeTestCase):
+class TestGo1LeadIntegration(FrappeTestCase):
 	pass

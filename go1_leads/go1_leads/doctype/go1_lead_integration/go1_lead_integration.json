@@ -1,35 +1,34 @@
 {
  "actions": [],
  "allow_rename": 1,
- "autoname": "format:{lead_application}-{#####}",
+ "autoname": "format:{lead_app}-{#####}",
  "creation": "2024-08-12 17:22:55.653044",
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
-  "lead_application",
+  "lead_app",
   "url",
   "user_id",
   "profile_id",
   "key",
+  "mobile",
   "from_date",
   "to_date"
  ],
  "fields": [
   {
-   "fieldname": "lead_application",
-   "fieldtype": "Select",
-   "label": "Lead Application",
-   "options": "Trade India\nIndia Mart"
-  },
-  {
+   "depends_on": "eval:doc.lead_app == \"Trade India\"",
    "fieldname": "user_id",
    "fieldtype": "Data",
-   "label": "User ID"
+   "label": "User ID",
+   "mandatory_depends_on": "eval:doc.lead_app == \"Trade India\""
   },
   {
+   "depends_on": "eval:doc.lead_app == \"Trade India\"",
    "fieldname": "profile_id",
    "fieldtype": "Data",
-   "label": "Profile ID"
+   "label": "Profile ID",
+   "mandatory_depends_on": "eval:doc.lead_app == \"Trade India\""
   },
   {
    "fieldname": "key",
@@ -50,14 +49,25 @@
    "fieldname": "url",
    "fieldtype": "Data",
    "label": "URL"
+  },
+  {
+   "fieldname": "lead_app",
+   "fieldtype": "Select",
+   "label": "Lead App",
+   "options": "Trade India\nIndiaMart"
+  },
+  {
+   "fieldname": "mobile",
+   "fieldtype": "Phone",
+   "label": "Mobile"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-08-12 17:38:35.831509",
+ "modified": "2024-08-16 19:51:23.057118",
  "modified_by": "Administrator",
  "module": "Go1 Leads",
- "name": "Lead Integration",
+ "name": "Go1 Lead Integration",
  "naming_rule": "Expression",
  "owner": "Administrator",
  "permissions": [
