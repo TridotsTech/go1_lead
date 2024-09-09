@@ -7,6 +7,9 @@ frappe.ui.form.on('Go1 Lead Integration', {
             frm.call({
                 doc:frm.doc,
                 method:"pull_leads",
+                args:{
+                    "lead_app":frm.doc.lead_app
+                },
                 async:true,
                 freeze:true,
                 freeze_message:"Pulling leads",

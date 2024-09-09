@@ -11,6 +11,7 @@
   "user_id",
   "profile_id",
   "key",
+  "product_enquired",
   "mobile",
   "from_date",
   "to_date"
@@ -54,17 +55,23 @@
    "fieldname": "lead_app",
    "fieldtype": "Select",
    "label": "Lead App",
-   "options": "Trade India\nIndiaMart"
+   "options": "Trade India\nIndiamart"
   },
   {
    "fieldname": "mobile",
    "fieldtype": "Phone",
    "label": "Mobile"
+  },
+  {
+   "fieldname": "product_enquired",
+   "fieldtype": "Select",
+   "label": "Product Enquired",
+   "options": "Rocotile\nBioman"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-08-16 19:51:23.057118",
+ "modified": "2024-08-31 16:28:47.649566",
  "modified_by": "Administrator",
  "module": "Go1 Leads",
  "name": "Go1 Lead Integration",
