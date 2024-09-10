@@ -19,8 +19,11 @@ class Go1LeadIntegration(Document):
 					product_enquired = self.product_enquired
 					url = f"{self.url}?userid={self.user_id}&profile_id={self.profile_id}&key={self.key}&from_date={self.from_date if self.from_date else date}&to_date={self.to_date if self.to_date else date}"
 				frappe.log_error("Trade india url",url)
-				leads = requests.get(url = url).json()
-				# frappe.log_error(f"Trade India leads from {date} to {date}",leads)
+				response = requests.get(url = url)
+				leads = response.json()
+				frappe.log_error(f"Trade India leads from {date} to {date}",leads)
+				if type(leads) == str:
+					frappe.throw(leads)
 				self.create_lead(leads,lead_app,product_enquired = product_enquired)
 			elif lead_app == "Indiamart":
 					date = datetime.now()
@@ -68,7 +71,7 @@ class Go1LeadIntegration(Document):
 				frappe.get_doc({"doctype":"Lead Source","source_name":source}).insert(ignore_permissions=True)
 			for d in data['RESPONSE']:
 				if not frappe.db.exists("Lead",{"source":source,"custom_im_query_id":d.get("UNIQUE_QUERY_ID")}):
-					self.create_indiamart_lead(d)	
+					self.create_indiamart_lead(d,product_enquired = product_enquired)	
 		
 	def create_tradeindia_lead(self,d,product_enquired=None,source = "Trade India"):
 		frappe.get_doc({
