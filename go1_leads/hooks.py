@@ -133,23 +133,13 @@ app_license = "mit"
 # Scheduled Tasks
 # ---------------
 
-# scheduler_events = {
-# 	"all": [
-# 		"go1_leads.tasks.all"
-# 	],
-# 	"daily": [
-# 		"go1_leads.tasks.daily"
-# 	],
-# 	"hourly": [
-# 		"go1_leads.tasks.hourly"
-# 	],
-# 	"weekly": [
-# 		"go1_leads.tasks.weekly"
-# 	],
-# 	"monthly": [
-# 		"go1_leads.tasks.monthly"
-# 	],
-# }
+scheduler_events = {
+    "cron": {
+        "*/15 * * * *": [
+            "go1_leads.go1_leads.doctype.go1_lead_integration.go1_lead_integration.sync_leads"
+        ]
+    }
+}
 
 # Testing
 # -------

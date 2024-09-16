@@ -135,9 +135,12 @@ class Go1LeadIntegration(Document):
 
 @frappe.whitelist()
 def sync_leads():
-		lead_integration = frappe.get_list("Go1 Lead Integration",["*"])
-		for i in lead_integration:
-			doc = frappe.get_doc("Go1 Lead Integration",i.name)
-			# doc.pull_leads()
-			frappe.log_error("sync lead",doc.name)
-			frappe.get_doc("Go1 Lead Integration",doc.name).pull_leads(doc.lead_app,credentials = doc)
+		try:
+			lead_integration = frappe.get_list("Go1 Lead Integration",["*"])
+			for i in lead_integration:
+				doc = frappe.get_doc("Go1 Lead Integration",i.name)
+				# doc.pull_leads()
+				frappe.log_error("sync lead",doc.name)
+				frappe.get_doc("Go1 Lead Integration",doc.name).pull_leads(doc.lead_app,credentials = doc)
+		except Exception:
+			frappe.log_error("sync lead error",frappe.get_traceback())
