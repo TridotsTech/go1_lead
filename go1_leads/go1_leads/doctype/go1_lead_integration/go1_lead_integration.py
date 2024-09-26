@@ -124,7 +124,7 @@ class Go1LeadIntegration(Document):
 			"custom_product_name":d['QUERY_PRODUCT_NAME'],
 			"custom_subject":d['SUBJECT'],
 			"custom_message":d['QUERY_MESSAGE'],
-			"custom_address":d['SENDER_ADDRESS'] if d.get('SENDER_ADDRESS') else "",
+			# "custom_address":d['SENDER_ADDRESS'] if d.get('SENDER_ADDRESS') else "",
 			"custom_pincode":d['SENDER_PINCODE'] if d.get('SENDER_PINCODE') else "",
 			"custom_product_enquired":product_enquired,
 			"custom_customer_category":"B2B",
@@ -139,8 +139,6 @@ def sync_leads():
 			lead_integration = frappe.get_list("Go1 Lead Integration",["*"])
 			for i in lead_integration:
 				doc = frappe.get_doc("Go1 Lead Integration",i.name)
-				# doc.pull_leads()
-				frappe.log_error("sync lead",doc.name)
 				frappe.get_doc("Go1 Lead Integration",doc.name).pull_leads(doc.lead_app,credentials = doc)
 		except Exception:
 			frappe.log_error("sync lead error",frappe.get_traceback())
