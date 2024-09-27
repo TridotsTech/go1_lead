@@ -11,10 +11,11 @@
   "user_id",
   "profile_id",
   "key",
-  "product_enquired",
-  "mobile",
   "from_date",
-  "to_date"
+  "to_date",
+  "access_token",
+  "privacy_policy_url",
+  "follow_up_url"
  ],
  "fields": [
   {
@@ -32,21 +33,25 @@
    "mandatory_depends_on": "eval:doc.lead_app == \"Trade India\""
   },
   {
+   "depends_on": "eval:doc.lead_app==\"Indiamart\" || doc.lead_app==\"Trade India\"",
    "fieldname": "key",
    "fieldtype": "Data",
    "label": "Key"
   },
   {
+   "depends_on": "eval:doc.lead_app==\"Indiamart\" || doc.lead_app==\"Trade India\"",
    "fieldname": "from_date",
    "fieldtype": "Date",
    "label": "From Date"
   },
   {
+   "depends_on": "eval:doc.lead_app==\"Indiamart\" || doc.lead_app==\"Trade India\"",
    "fieldname": "to_date",
    "fieldtype": "Date",
    "label": "To Date"
   },
   {
+   "depends_on": "eval:doc.lead_app==\"Indiamart\" || doc.lead_app==\"Trade India\"",
    "fieldname": "url",
    "fieldtype": "Data",
    "label": "URL"
@@ -55,23 +60,35 @@
    "fieldname": "lead_app",
    "fieldtype": "Select",
    "label": "Lead App",
-   "options": "Trade India\nIndiamart"
+   "options": "Trade India\nIndiamart\nFacebook"
   },
   {
-   "fieldname": "mobile",
-   "fieldtype": "Phone",
-   "label": "Mobile"
+   "depends_on": "eval:doc.lead_app == \"Facebook\"",
+   "fieldname": "access_token",
+   "fieldtype": "Small Text",
+   "label": "Access Token",
+   "mandatory_depends_on": "eval:doc.lead_app == \"Facebook\""
   },
   {
-   "fieldname": "product_enquired",
-   "fieldtype": "Select",
-   "label": "Product Enquired",
-   "options": "Rocotile\nBioman"
+   "depends_on": "eval:doc.lead_app==\"Facebook\"",
+   "fieldname": "privacy_policy_url",
+   "fieldtype": "Data",
+   "label": "Privacy Policy URL",
+   "mandatory_depends_on": "eval:doc.lead_app == \"Facebook\"",
+   "options": "URL"
+  },
+  {
+   "depends_on": "eval:doc.lead_app == \"Facebook\"",
+   "fieldname": "follow_up_url",
+   "fieldtype": "Data",
+   "label": "Follow up URL",
+   "mandatory_depends_on": "eval:doc.lead_app == \"Facebook\"",
+   "options": "URL"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-08-31 16:28:47.649566",
+ "modified": "2024-09-27 14:23:39.297106",
  "modified_by": "Administrator",
  "module": "Go1 Leads",
  "name": "Go1 Lead Integration",

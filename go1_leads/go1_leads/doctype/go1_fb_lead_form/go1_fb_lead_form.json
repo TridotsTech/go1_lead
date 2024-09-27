@@ -1,0 +1,75 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2024-09-26 20:10:22.092423",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "section_break_c9s5",
+  "form_name",
+  "column_break_ydxv",
+  "status",
+  "section_break_owvj",
+  "lead_questions",
+  "form_id"
+ ],
+ "fields": [
+  {
+   "fieldname": "section_break_c9s5",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "form_name",
+   "fieldtype": "Data",
+   "label": "Form Name"
+  },
+  {
+   "fieldname": "lead_questions",
+   "fieldtype": "Table",
+   "label": "Lead Questions",
+   "options": "Go1 FB LF Details"
+  },
+  {
+   "fieldname": "form_id",
+   "fieldtype": "Data",
+   "label": "Form Id"
+  },
+  {
+   "fieldname": "column_break_ydxv",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Data",
+   "label": "Status"
+  },
+  {
+   "fieldname": "section_break_owvj",
+   "fieldtype": "Section Break"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2024-09-27 15:54:50.999124",
+ "modified_by": "Administrator",
+ "module": "Go1 Leads",
+ "name": "Go1 FB Lead Form",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
