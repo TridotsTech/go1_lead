@@ -35,7 +35,7 @@ bench --site <sitename> install-app go1_leads
 #### Indiamart Setup
 1. [Login to your indiamart account](https://www.indiamart.com/)
 2. Setup credentials  
-    Get credentials fro Pull Lead  
+    Get credentials for Pull Lead  
     Copy and paste the necessary details on Go1 Lead Integration
 
  You can pull leads manually using Pull Lead button with specific dates or default today leads will be pulled
