@@ -16,10 +16,8 @@ class Go1LeadIntegration(Document):
 					url = f"{credentials.url}?userid={credentials.user_id}&profile_id={credentials.profile_id}&key={credentials.key}&from_date={date}&to_date={date}"
 				else:
 					url = f"{self.url}?userid={self.user_id}&profile_id={self.profile_id}&key={self.key}&from_date={self.from_date if self.from_date else date}&to_date={self.to_date if self.to_date else date}"
-				frappe.log_error("Trade india url",url)
 				response = requests.get(url = url)
 				leads = response.json()
-				frappe.log_error(f"Trade India leads from {date} to {date}",leads)
 				if type(leads) == str:
 					frappe.throw(leads)
 				self.create_lead(leads,lead_app)
@@ -40,12 +38,10 @@ class Go1LeadIntegration(Document):
 					start_date = start_date_obj.strftime("%d-%b-%Y")
 					end_date = end_date_obj.strftime("%d-%b-%Y")
 					url = f"{url}/?glusr_crm_key={key}&start_time={start_date}&end_time={end_date}"
-					frappe.log_error("Indiamart url",url)
 					leads = requests.get(url = url).json()
 					if leads.get('CODE') == 200:
 						self.create_lead(leads,lead_app)
 					elif leads.get('CODE') == 429:
-						frappe.log_error("Indiamart API Called",leads.get('MESSAGE'))
 						frappe.msgprint(leads.get('MESSAGE'))
 		except Exception:
 			frappe.log_error("failed",frappe.get_traceback())
@@ -59,8 +55,6 @@ class Go1LeadIntegration(Document):
 			for d in data:
 				if not frappe.db.exists("Lead",{"source":source,"custom_rfi_id":d.get("rfi_id")}):
 					if not d['sender_name'] == "Phone Inquiry":
-						frappe.log_error("number type",type(d['sender_mobile']))
-						frappe.log_error("number equal",d['sender_mobile'][3:])
 						self.create_tradeindia_lead(d)
 						
 		elif source == "Indiamart":
