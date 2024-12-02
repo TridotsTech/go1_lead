@@ -126,7 +126,7 @@ def create_fb_lead(data,form_id):
 def handleFaceBookWebhook():
 	if frappe.request.method == "POST":
 		data = frappe.request.data
-		# createLead(data)
+		createLead(data)
 		return "OK", 200
 	elif frappe.request.method == "GET":
 		from werkzeug.wrappers import Response
@@ -147,3 +147,30 @@ def handleFaceBookWebhook():
 			return "Verification failed"
 	else:
 		return "Invalid request", 400
+
+
+import json
+import requests
+@frappe.whitelist(allow_guest=True)
+def createLead(data):
+	try:
+		dataDict = data.decode()
+		finalData = json.loads(dataDict)
+		# frappe.log_error("LeadGen Webhook Data",finalData)
+		
+		leadgen_id = finalData["entry"][0]["changes"][0]["value"]["leadgen_id"]
+		page_id = finalData["entry"][0]["changes"][0]["value"]["page_id"]
+		form_id = finalData["entry"][0]["changes"][0]["value"]["form_id"]
+		ad_id = finalData["entry"][0]["changes"][0]["value"]["ad_id"]
+
+		access_token = frappe.db.get_value("Go1 Lead Integration",{"lead_app":"Facebook"},"access_token")
+
+		### API for Fetching FormData
+		url=f"https://graph.facebook.com/v18.0/{leadgen_id}"
+		fieldsList = json.dumps(["field_data","ad_name","campaign_id","campaign_name","platform"])
+		r = requests.get(url = url, params = {"access_token":access_token,"fields":fieldsList})
+
+		get_data=r.json()
+		create_fb_lead(get_data,form_id)
+	except:
+		frappe.log_error("LeadGen Webhook Failed",data)
