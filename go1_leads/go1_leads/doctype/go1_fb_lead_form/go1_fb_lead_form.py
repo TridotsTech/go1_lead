@@ -122,6 +122,43 @@ def create_fb_lead(data,form_id):
 		frappe.db.commit()
 		frappe.log_error("fb data",json_data)
 
+def create_fb_lead_frappecrm(data,form_id):
+	lead_source = frappe.db.exists("CRM Lead Source",{'name':"Facebook"})
+	if not lead_source:
+		lead_doc = frappe.get_doc({
+			"doctype":"CRM Lead Source",
+			"source_name":"Facebook"
+		})
+		lead_doc.insert(ignore_permissions=True)
+		frappe.db.commit()
+		lead_source = lead_doc.name
+	json_data=[]
+	json_data.append(data)
+	for i in data['field_data']:
+		if i.get('name') == "Email":
+			email = i.get('values')[0]
+		if i.get('name') == "Full Name":
+			full_name = i.get('values')[0]
+		if i.get('name') == "First Name":
+			first_name = i.get('values')[0]
+		if i.get("name") == "Last Name":
+			last_name = i.get('values')[0]
+	lead = frappe.db.exists("CRM Lead",{'custom_fb_lead_id':data['id']})
+	if not lead:
+		lead_doc = frappe.get_doc({
+			"doctype":"CRM Lead",
+			"source":lead_source,
+			"custom_fb_lead_id":data['id'],
+			"custom_fb_form_id":form_id,
+			"custom_fb_data":json.dumps(json_data),
+			"email_id":email ,
+			"first_name":first_name if first_name else "",
+			"last_name":last_name if last_name else "",
+			})
+		lead_doc.insert(ignore_permissions = True,ignore_mandatory = True)
+		frappe.db.commit()
+		frappe.log_error("fb data",json_data)
+
 @frappe.whitelist(allow_guest = True)
 def handleFaceBookWebhook():
 	if frappe.request.method == "POST":
@@ -171,6 +208,14 @@ def createLead(data):
 		r = requests.get(url = url, params = {"access_token":access_token,"fields":fieldsList})
 
 		get_data=r.json()
-		create_fb_lead(get_data,form_id)
+
+		installed_apps = frappe.db.get_all("Installed Application",pluck="app_name")
+		if "crm" in installed_apps:
+			create_fb_lead_frappecrm(get_data,form_id)
+		else:
+			if "erpnext" in installed_apps:
+				create_fb_lead(get_data,form_id)
+			else:
+				frappe.log_error("App Required","ERPNext or FrappeCRM required to fetch leads from FaceBook via Webhooks.")
 	except:
 		frappe.log_error("LeadGen Webhook Failed",data)
