@@ -13,6 +13,7 @@
   "key",
   "from_date",
   "to_date",
+  "verify_token",
   "access_token",
   "privacy_policy_url",
   "follow_up_url"
@@ -84,11 +85,17 @@
    "label": "Follow up URL",
    "mandatory_depends_on": "eval:doc.lead_app == \"Facebook\"",
    "options": "URL"
+  },
+  {
+   "depends_on": "eval:doc.lead_app=='Facebook'",
+   "fieldname": "verify_token",
+   "fieldtype": "Data",
+   "label": "Verify Token"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-09-27 14:23:39.297106",
+ "modified": "2024-12-03 15:29:37.739902",
  "modified_by": "Administrator",
  "module": "Go1 Leads",
  "name": "Go1 Lead Integration",

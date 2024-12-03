@@ -136,7 +136,7 @@ def handleFaceBookWebhook():
 		hub_challenge = frappe.request.args.get("hub.challenge")
 		hub_verify_token = frappe.request.args.get("hub.verify_token")
 
-		verify_token = frappe.db.get_single_value('FB Configuration','verify_token')
+		verify_token = frappe.db.get_value("Go1 Lead Integration",{"lead_app":"Facebook"},"verify_token")
 
 		if hub_mode == "subscribe" and hub_verify_token == verify_token:
 			response.mimetype = "text/plain"
