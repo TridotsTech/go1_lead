@@ -149,6 +149,7 @@ def create_fb_lead_frappecrm(data,form_id):
 			if frappe.scrub(i.get("name")) == "last_name":
 				last_name = i.get('values')[0]
 		lead = frappe.db.exists("CRM Lead",{'custom_fb_lead_id':data['id']})
+		frappe.log_error("Lead Email",email)
 		if not lead:
 			lead_doc = frappe.get_doc({
 				"doctype":"CRM Lead",
@@ -157,7 +158,7 @@ def create_fb_lead_frappecrm(data,form_id):
 				"custom_fb_form_id":form_id,
 				"custom_fb_data":json.dumps(json_data),
 				"email_id":email if email else "" ,
-				"first_name":first_name if first_name else "",
+				"first_name":first_name if first_name else (full_name if full_name else ""),
 				"last_name":last_name if last_name else "",
 				})
 			lead_doc.insert(ignore_permissions = True,ignore_mandatory = True)
