@@ -162,7 +162,7 @@ def create_fb_lead_frappecrm(data,form_id):
 			frappe.db.commit()
 			frappe.log_error("fb data",json_data)
 	except:
-		frappe.log_error("LeadGen Create Lead Error",frappe.get_traceback())
+		frappe.log_error("LeadGen Create Lead Error",[data,frappe.get_traceback()])
 
 @frappe.whitelist(allow_guest = True)
 def handleFaceBookWebhook():
