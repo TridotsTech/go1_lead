@@ -122,6 +122,8 @@ def create_fb_lead(data,form_id):
 		frappe.db.commit()
 		frappe.log_error("fb data",json_data)
 
+
+@frappe.whitelist(allow_guest=True)
 def create_fb_lead_frappecrm(data,form_id):
 	lead_source = frappe.db.exists("CRM Lead Source",{'name':"Facebook"})
 	if not lead_source:
@@ -218,4 +220,4 @@ def createLead(data):
 			else:
 				frappe.log_error("App Required","ERPNext or FrappeCRM required to fetch leads from FaceBook via Webhooks.")
 	except:
-		frappe.log_error("LeadGen Webhook Failed",data)
+		frappe.log_error("LeadGen Webhook Failed",[data,frappe.get_traceback()])
