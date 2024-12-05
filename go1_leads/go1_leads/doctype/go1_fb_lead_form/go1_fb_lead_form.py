@@ -125,41 +125,44 @@ def create_fb_lead(data,form_id):
 
 @frappe.whitelist(allow_guest=True)
 def create_fb_lead_frappecrm(data,form_id):
-	lead_source = frappe.db.exists("CRM Lead Source",{'name':"Facebook"})
-	if not lead_source:
-		lead_doc = frappe.get_doc({
-			"doctype":"CRM Lead Source",
-			"source_name":"Facebook"
-		})
-		lead_doc.insert(ignore_permissions=True)
-		frappe.db.commit()
-		lead_source = lead_doc.name
-	json_data=[]
-	json_data.append(data)
-	for i in data['field_data']:
-		if i.get('name') == "Email":
-			email = i.get('values')[0]
-		if i.get('name') == "Full Name":
-			full_name = i.get('values')[0]
-		if i.get('name') == "First Name":
-			first_name = i.get('values')[0]
-		if i.get("name") == "Last Name":
-			last_name = i.get('values')[0]
-	lead = frappe.db.exists("CRM Lead",{'custom_fb_lead_id':data['id']})
-	if not lead:
-		lead_doc = frappe.get_doc({
-			"doctype":"CRM Lead",
-			"source":lead_source,
-			"custom_fb_lead_id":data['id'],
-			"custom_fb_form_id":form_id,
-			"custom_fb_data":json.dumps(json_data),
-			"email_id":email if email else "" ,
-			"first_name":first_name if first_name else "",
-			"last_name":last_name if last_name else "",
+	try:
+		lead_source = frappe.db.exists("CRM Lead Source",{'name':"Facebook"})
+		if not lead_source:
+			lead_doc = frappe.get_doc({
+				"doctype":"CRM Lead Source",
+				"source_name":"Facebook"
 			})
-		lead_doc.insert(ignore_permissions = True,ignore_mandatory = True)
-		frappe.db.commit()
-		frappe.log_error("fb data",json_data)
+			lead_doc.insert(ignore_permissions=True)
+			frappe.db.commit()
+			lead_source = lead_doc.name
+		json_data=[]
+		json_data.append(data)
+		for i in data['field_data']:
+			if i.get('name') == "Email":
+				email = i.get('values')[0]
+			if i.get('name') == "Full Name":
+				full_name = i.get('values')[0]
+			if i.get('name') == "First Name":
+				first_name = i.get('values')[0]
+			if i.get("name") == "Last Name":
+				last_name = i.get('values')[0]
+		lead = frappe.db.exists("CRM Lead",{'custom_fb_lead_id':data['id']})
+		if not lead:
+			lead_doc = frappe.get_doc({
+				"doctype":"CRM Lead",
+				"source":lead_source,
+				"custom_fb_lead_id":data['id'],
+				"custom_fb_form_id":form_id,
+				"custom_fb_data":json.dumps(json_data),
+				"email_id":email if email else "" ,
+				"first_name":first_name if first_name else "",
+				"last_name":last_name if last_name else "",
+				})
+			lead_doc.insert(ignore_permissions = True,ignore_mandatory = True)
+			frappe.db.commit()
+			frappe.log_error("fb data",json_data)
+	except:
+		frappe.log_error("LeadGen Create Lead Error",frappe.get_traceback())
 
 @frappe.whitelist(allow_guest = True)
 def handleFaceBookWebhook():
