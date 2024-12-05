@@ -126,7 +126,7 @@ def create_fb_lead(data,form_id):
 @frappe.whitelist(allow_guest=True)
 def create_fb_lead_frappecrm(data,form_id):
 	try:
-		email, first_name, last_name, full_name = "","","",""
+		email, first_name, last_name, full_name, mobile_no = "","","","",""
 		lead_source = frappe.db.exists("CRM Lead Source",{'name':"Facebook"})
 		if not lead_source:
 			lead_doc = frappe.get_doc({
@@ -148,8 +148,9 @@ def create_fb_lead_frappecrm(data,form_id):
 				first_name = i.get('values')[0]
 			if frappe.scrub(i.get("name")) == "last_name":
 				last_name = i.get('values')[0]
+			if frappe.scrub(i.get("name")) == "phone_number":
+				mobile_no = i.get('values')[0]
 		lead = frappe.db.exists("CRM Lead",{'custom_fb_lead_id':data['id']})
-		frappe.log_error("Lead Email",email)
 		if not lead:
 			lead_doc = frappe.get_doc({
 				"doctype":"CRM Lead",
@@ -157,13 +158,14 @@ def create_fb_lead_frappecrm(data,form_id):
 				"custom_fb_lead_id":data['id'],
 				"custom_fb_form_id":form_id,
 				"custom_fb_data":json.dumps(json_data),
-				"email_id":email if email else "" ,
+				"email":email if email else "" ,
 				"first_name":first_name if first_name else (full_name if full_name else ""),
 				"last_name":last_name if last_name else "",
+				"mobile_no": mobile_no if mobile_no else ""
 				})
 			lead_doc.insert(ignore_permissions = True,ignore_mandatory = True)
 			frappe.db.commit()
-			frappe.log_error("fb data",json_data)
+			frappe.log_error("LeadGen Success fb data",json_data)
 	except:
 		frappe.log_error("LeadGen Create Lead Error",[data,frappe.get_traceback()])
 
