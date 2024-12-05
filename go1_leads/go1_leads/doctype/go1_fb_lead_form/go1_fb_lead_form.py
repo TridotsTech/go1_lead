@@ -153,7 +153,7 @@ def create_fb_lead_frappecrm(data,form_id):
 			"custom_fb_lead_id":data['id'],
 			"custom_fb_form_id":form_id,
 			"custom_fb_data":json.dumps(json_data),
-			"email_id":email ,
+			"email_id":email if email else "" ,
 			"first_name":first_name if first_name else "",
 			"last_name":last_name if last_name else "",
 			})
