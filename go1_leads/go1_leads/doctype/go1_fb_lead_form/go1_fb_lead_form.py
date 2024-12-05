@@ -138,13 +138,13 @@ def create_fb_lead_frappecrm(data,form_id):
 		json_data=[]
 		json_data.append(data)
 		for i in data['field_data']:
-			if i.get('name') == "Email":
+			if frappe.scrub(i.get('name')) == "email":
 				email = i.get('values')[0]
-			if i.get('name') == "Full Name":
+			if frappe.scrub(i.get('name')) == "full_name":
 				full_name = i.get('values')[0]
-			if i.get('name') == "First Name":
+			if frappe.scrub(i.get('name')) == "first_name":
 				first_name = i.get('values')[0]
-			if i.get("name") == "Last Name":
+			if frappe.scrub(i.get("name")) == "last_name":
 				last_name = i.get('values')[0]
 		lead = frappe.db.exists("CRM Lead",{'custom_fb_lead_id':data['id']})
 		if not lead:
