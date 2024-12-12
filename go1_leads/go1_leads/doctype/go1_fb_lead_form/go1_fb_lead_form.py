@@ -138,7 +138,6 @@ def create_fb_lead_frappecrm(data,form_id):
 			lead_source = lead_doc.name
 		json_data=[]
 		json_data.append(data)
-		frappe.log_error("Data",[type(data),data])
 		for i in data['field_data']:
 			if frappe.scrub(i.get('name')) == "email":
 				email = i.get('values')[0]
