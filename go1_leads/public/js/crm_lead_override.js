@@ -1,4 +1,4 @@
-frappe.ui.form.on("Lead", {
+frappe.ui.form.on("CRM Lead", {
     refresh(frm){
         frm.fields_dict.custom_fb_field.$wrapper.empty()
         $('[data-fieldname="custom_section_break_fqfqo"] div[class="section-head"]').remove()
