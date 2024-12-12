@@ -17,7 +17,7 @@ function render_fields(frm) {
     $('[data-fieldname="custom_section_break_fqfqo"] div[class="section-head"]').remove()
     $('[data-fieldname="custom_section_break_fqfqo"]').prepend(`<div class="section-head">Facebook Lead Info</div>`)
     $('[data-fieldname="custom_fb_field"]').attr("style","display: flex;width: 100%;flex-wrap: wrap;")
-    $('[data-fieldname="__column_4"]').attr("style","padding:0px !important")
+    $('[data-fieldname="__column_3"]').attr("style","padding:0px !important")
     for (let i of data[0].field_data) {
         if (i.values[0].length > 140) {
             type = "Small Text"
