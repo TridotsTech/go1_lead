@@ -207,7 +207,6 @@ def createLead(data):
 		leadgen_id = finalData["entry"][0]["changes"][0]["value"]["leadgen_id"]
 		page_id = finalData["entry"][0]["changes"][0]["value"]["page_id"]
 		form_id = finalData["entry"][0]["changes"][0]["value"]["form_id"]
-		ad_id = finalData["entry"][0]["changes"][0]["value"]["ad_id"]
 
 		access_token = frappe.db.get_value("Go1 Lead Integration",{"lead_app":"Facebook"},"access_token")
 
