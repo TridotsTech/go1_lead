@@ -218,3 +218,17 @@ scheduler_events = {
 # 	"Logging DocType Name": 30  # days to retain logs
 # }
 
+fixtures = [
+    {
+        "doctype": "Custom Field",
+        "filters": {
+            "module": ["=", "Go1 Leads"]
+        }
+    },
+    {
+        "doctype": "Property Setter",
+        "filters": {
+            "module": ["=", "Go1 Leads"]
+        }
+    }
+]
