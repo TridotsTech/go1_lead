@@ -85,6 +85,7 @@ def get_fb_pages(doc):
 	else:
 		frappe.throw("Set Credentials for facebook")
 
+@frappe.whitelist(allow_guest=True)
 def create_fb_lead(data,form_id):
 	email, first_name, last_name, full_name, mobile_no = "","","","",""
 	lead_source = frappe.db.exists("Lead Source",{'name':"Facebook"})
