@@ -86,6 +86,7 @@ def get_fb_pages(doc):
 		frappe.throw("Set Credentials for facebook")
 
 def create_fb_lead(data,form_id):
+	email, first_name, last_name, full_name, mobile_no = "","","","",""
 	lead_source = frappe.db.exists("Lead Source",{'name':"Facebook"})
 	if not lead_source:
 		lead_doc = frappe.get_doc({
@@ -98,14 +99,16 @@ def create_fb_lead(data,form_id):
 	json_data=[]
 	json_data.append(data)
 	for i in data['field_data']:
-		if i.get('name') == "Email":
+		if frappe.scrub(i.get('name')) == "email":
 			email = i.get('values')[0]
-		if i.get('name') == "Full Name":
+		if frappe.scrub(i.get('name')) == "full_name":
 			full_name = i.get('values')[0]
-		if i.get('name') == "First Name":
+		if frappe.scrub(i.get('name')) == "first_name":
 			first_name = i.get('values')[0]
-		if i.get("name") == "Last Name":
+		if frappe.scrub(i.get("name")) == "last_name":
 			last_name = i.get('values')[0]
+		if frappe.scrub(i.get("name")) == "phone_number":
+			mobile_no = i.get('values')[0]
 	lead = frappe.db.exists("Lead",{'custom_fb_lead_id':data['id']})
 	if not lead:
 		lead_doc = frappe.get_doc({
@@ -114,9 +117,10 @@ def create_fb_lead(data,form_id):
 			"custom_fb_lead_id":data['id'],
 			"custom_fb_form_id":form_id,
 			"custom_fb_data":json.dumps(json_data),
-			"email_id":email ,
-			"first_name":first_name if first_name else "",
+			"email_id":email if email else "",
+			"first_name":first_name if first_name else (full_name if full_name else ""),
 			"last_name":last_name if last_name else "",
+			"mobile_no": mobile_no if mobile_no else ""
 			})
 		lead_doc.insert(ignore_permissions = True,ignore_mandatory = True)
 		frappe.db.commit()
