@@ -2,6 +2,7 @@
 # See license.txt
 
 # import frappe
+# pyrefly: ignore [missing-import]
 from frappe.tests.utils import FrappeTestCase
 
 

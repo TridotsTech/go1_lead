@@ -1,9 +1,12 @@
 # Copyright (c) 2024, Tridots Tech and contributors
 # For license information, please see license.txt
 
+# pyrefly: ignore [missing-import]
 import frappe,requests,json
+# pyrefly: ignore [missing-import]
 from frappe.utils import today
 from datetime import datetime
+# pyrefly: ignore [missing-import]
 from frappe.model.document import Document
 
 class Go1LeadIntegration(Document):
@@ -16,14 +19,15 @@ class Go1LeadIntegration(Document):
 					url = f"{credentials.url}?userid={credentials.user_id}&profile_id={credentials.profile_id}&key={credentials.key}&from_date={date}&to_date={date}"
 				else:
 					url = f"{self.url}?userid={self.user_id}&profile_id={self.profile_id}&key={self.key}&from_date={self.from_date if self.from_date else date}&to_date={self.to_date if self.to_date else date}"
+				
+				frappe.log_error(f"Trade India Pull Attempt", "Trade India Integration")
 				response = requests.get(url = url)
 				leads = response.json()
 				if type(leads) == str:
 					frappe.throw(leads)
 				self.create_lead(leads,lead_app)
+				
 			elif lead_app == "Indiamart":
-					date = datetime.now()
-					# start_date = date.strftime("%d-%b-%Y")
 					if credentials:
 						start_date_obj = datetime.strptime(today(),"%Y-%m-%d")
 						end_date_obj = datetime.strptime(today(),"%Y-%m-%d")
@@ -34,62 +38,90 @@ class Go1LeadIntegration(Document):
 						end_date_obj = datetime.strptime(self.to_date,"%Y-%m-%d") 
 						key = self.key
 						url = self.url
-					#Change date format from yyyy-mm-dd to 13-Aug-2022
+					
+					base_url = url.rstrip('/')
 					start_date = start_date_obj.strftime("%d-%b-%Y")
 					end_date = end_date_obj.strftime("%d-%b-%Y")
-					url = f"{url}/?glusr_crm_key={key}&start_time={start_date}&end_time={end_date}"
-					leads = requests.get(url = url).json()
+					
+					final_url = f"{base_url}/?glusr_crm_key={key}&start_time={start_date}&end_time={end_date}"
+					
+					# FIX: Use a short title and put the long URL in the message body
+					masked_url = final_url.replace(key, "********")
+					frappe.log_error(title="IndiaMart Pull Attempt", message=f"URL: {masked_url}")
+
+					response = requests.get(url = final_url)
+					leads = response.json()
+					
+					# FIX: Short title for raw response
+					frappe.log_error(title="IndiaMart API Response", message=json.dumps(leads, indent=2))
+
 					if leads.get('CODE') == 200:
 						self.create_lead(leads,lead_app)
 					elif leads.get('CODE') == 429:
-						frappe.msgprint(leads.get('MESSAGE'))
+						msg = f"Rate Limit (429): {leads.get('MESSAGE')}"
+						frappe.msgprint(msg)
+						frappe.log_error(title="IndiaMart Rate Limit", message=msg)
+					else:
+						msg = f"Error ({leads.get('CODE')}): {leads.get('MESSAGE')}"
+						frappe.log_error(title="IndiaMart Error", message=msg)
+
 		except Exception:
-			frappe.log_error("failed",frappe.get_traceback())
+			frappe.log_error(title="IndiaMart Sync Failed", message=frappe.get_traceback())
 	
 	def create_lead(self,data,source):
 		if source == "Trade India":
 			if not frappe.db.exists("Lead Source",{"source_name":"Trade India"}):
-				#Create new lead source
 				frappe.get_doc({"doctype":"Lead Source","source_name":"Trade India"}).insert(ignore_permissions=True)
-			#loop through the data and create leads ,in exists also validate rfi_id if not exist
+			
+			count = 0
 			for d in data:
 				if not frappe.db.exists("Lead",{"source":source,"custom_rfi_id":d.get("rfi_id")}):
 					if not d['sender_name'] == "Phone Inquiry":
 						self.create_tradeindia_lead(d)
+						count += 1
+			frappe.log_error(title="Trade India Process Complete", message=f"Created {count} leads")
 						
 		elif source == "Indiamart":
 			if not frappe.db.exists("Lead Source",{"source_name":source}):
-				#Create new lead source
 				frappe.get_doc({"doctype":"Lead Source","source_name":source}).insert(ignore_permissions=True)
-			for d in data['RESPONSE']:
-				if not frappe.db.exists("Lead",{"source":source,"custom_im_query_id":d.get("UNIQUE_QUERY_ID")}):
-					self.create_indiamart_lead(d)	
+			
+			count = 0
+			for d in data.get('RESPONSE', []):
+				query_id = d.get("UNIQUE_QUERY_ID")
+				if not frappe.db.exists("Lead",{"source":source,"custom_im_query_id":query_id}):
+					try:
+						self.create_indiamart_lead(d)
+						count += 1
+					except Exception:
+						frappe.log_error(title=f"Lead Creation Failed: {query_id}", message=frappe.get_traceback())
+			
+			frappe.log_error(title="IndiaMart Process Complete", message=f"New leads created: {count}")
 		
 	def create_tradeindia_lead(self,d,source = "Trade India"):
 		frappe.get_doc({
 						"doctype":"Lead",
 						"first_name":d.get("sender_name"),
 						"source":source,
-						"custom_inquiry_type":d['inquiry_type'],
+						"custom_inquiry_type":d.get('inquiry_type'),
 						"custom_rfi_id":d.get('rfi_id'),
-						"email_id":d['sender_email'] if d.get('sender_email') else "",
+						"email_id":d.get('sender_email', ""),
 						"lead_status":"Open",
-						"custom_sender_company":d['sender_co'],
-						"custom_minimum_order_value":d['order_value_min'] if 'order_value_min' in d else "",
-						"country":d["sender_country"],
-						"city":d['sender_city'],
-						"state":d['sender_state'],
-						"custom_product_name":d['product_name'] if d.get('product_name') else "",
-						"custom_product_quantity":d['quantity'] if d.get('quantity') else "",
-						"custom_subject":d['subject'],
-						"custom_message":d['message'],
-						"custom_address":d['address'] if d.get('address') else "",
-						"mobile_no":d['sender_mobile'],
-						"whatsapp_no":d['sender_mobile'][3:] if (d.get('sender_mobile')[0:3] == "+91") else d['sender_mobile'],
+						"custom_sender_company":d.get('sender_co'),
+						"custom_minimum_order_value":d.get('order_value_min', ""),
+						"country":d.get("sender_country"),
+						"city":d.get('sender_city'),
+						"state":d.get('sender_state'),
+						"custom_product_name":d.get('product_name', ""),
+						"custom_product_quantity":d.get('quantity', ""),
+						"custom_subject":d.get('subject'),
+						"custom_message":d.get('message'),
+						"custom_address":d.get('address', ""),
+						"mobile_no":d.get('sender_mobile'),
+						"whatsapp_no":d.get('sender_mobile')[3:] if (d.get('sender_mobile') and d.get('sender_mobile')[0:3] == "+91") else d.get('sender_mobile'),
 					}).insert(ignore_permissions = True,ignore_mandatory = True)
 		
 	def create_indiamart_lead(self,d,source = "IndiaMart"):
-		query_type = {
+		query_type_map = {
 			"W" : "Direct & ASTBUY Enquiries",
 			"B" : "Buy-Leads",
 			"P" : "PNS Calls",
@@ -97,35 +129,42 @@ class Go1LeadIntegration(Document):
 			"BIZ" : "Catalog-view Leads",
 			"WA": "WhatsApp Enquiries"
 		}
-		code = d['SENDER_COUNTRY_ISO'].lower()
-		country = frappe.db.get_value("Country",{"code":code})
+		
+		iso_code = d.get('SENDER_COUNTRY_ISO', '').lower()
+		country = frappe.db.get_value("Country", {"code": iso_code}) if iso_code else None
+		
+		mobile = d.get('SENDER_MOBILE', '')
+		whatsapp = mobile
+		if mobile and mobile.startswith("+91-"):
+			whatsapp = mobile[4:]
+
 		frappe.get_doc({
 			"doctype":"Lead",
 			"first_name":d.get("SENDER_NAME"),
 			"source":source,
-			"custom_inquiry_type":query_type.get(d["QUERY_TYPE"]) if d.get("QUERY_TYPE") else "",
+			"custom_inquiry_type":query_type_map.get(d.get("QUERY_TYPE"), "Other"),
 			"custom_im_query_id":d.get('UNIQUE_QUERY_ID'),
-			"email_id":d['SENDER_EMAIL'] if d.get('SENDER_EMAIL') else "",
+			"email_id":d.get('SENDER_EMAIL', ""),
 			"lead_status":"Open",
-			"custom_sender_company":d['SENDER_COMPANY'],
+			"custom_sender_company":d.get('SENDER_COMPANY'),
 			"country":country if country else "",
-			"city":d['SENDER_CITY'],
-			"state":d['SENDER_STATE'],
-			"custom_product_name":d['QUERY_PRODUCT_NAME'],
-			"custom_subject":d['SUBJECT'],
-			"custom_message":d['QUERY_MESSAGE'],
-			"custom_pincode":d['SENDER_PINCODE'] if d.get('SENDER_PINCODE') else "",
-			"custom_call_duration":d["CALL_DURATION"],
-			"mobile_no":d['SENDER_MOBILE'],
-			"whatsapp_no":d['SENDER_MOBILE'][4:] if (d.get('SENDER_MOBILE')[0:4] == "+91-") else d['SENDER_MOBILE'],
+			"city":d.get('SENDER_CITY'),
+			"state":d.get('SENDER_STATE'),
+			"custom_product_name":d.get('QUERY_PRODUCT_NAME'),
+			"custom_subject":d.get('SUBJECT'),
+			"custom_message":d.get('QUERY_MESSAGE'),
+			"custom_pincode":d.get('SENDER_PINCODE', ""),
+			"custom_call_duration":d.get("CALL_DURATION"),
+			"mobile_no":mobile,
+			"whatsapp_no":whatsapp,
 		}).insert(ignore_permissions = True,ignore_mandatory = True)
 
 @frappe.whitelist()
 def sync_leads():
 		try:
-			lead_integration = frappe.get_list("Go1 Lead Integration",["*"])
-			for i in lead_integration:
-				doc = frappe.get_doc("Go1 Lead Integration",i.name)
-				frappe.get_doc("Go1 Lead Integration",doc.name).pull_leads(doc.lead_app,credentials = doc)
+			lead_integrations = frappe.get_all("Go1 Lead Integration", fields=["name", "lead_app"])
+			for integration in lead_integrations:
+				doc = frappe.get_doc("Go1 Lead Integration", integration.name)
+				doc.pull_leads(doc.lead_app, credentials=doc)
 		except Exception:
-			frappe.log_error("sync lead error",frappe.get_traceback())
+			frappe.log_error(title="Go1 Leads Sync Global Error", message=frappe.get_traceback())
